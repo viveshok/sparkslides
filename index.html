@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en">
+
+        <head>
+                <meta charset="utf-8">
+
+                <title>Apache Spark intro</title>
+
+                <meta name="description" content="Apache Spark: Distributed Computing made easy">
+                <meta name="author" content="Alexandre Beaulne">
+
+                <meta name="apple-mobile-web-app-capable" content="yes">
+                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+                <link rel="stylesheet" href="js/reveal.js/css/reveal.css">
+                <link rel="stylesheet" href="js/reveal.js/css/theme/black.css" id="theme">
+
+                <!-- Code syntax highlighting -->
+                <link rel="stylesheet" href="js/reveal.js/lib/css/zenburn.css">
+
+                <!-- Printing and PDF exports -->
+                <script>
+                        var link = document.createElement( 'link' );
+                        link.rel = 'stylesheet';
+                        link.type = 'text/css';
+                        link.href = window.location.search.match( /print-pdf/gi ) ? 'js/reveal.js/css/print/pdf.css' : 'js/reveal.js/css/print/paper.css';
+                        document.getElementsByTagName( 'head' )[0].appendChild( link );
+                </script>
+
+                <script type="text/x-mathjax-config">
+                      MathJax.Hub.Config({
+                          tex2jax: {inlineMath: [["$","$"],["\\(","\\)"]]}
+                      });
+                </script>
+
+                <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
+
+                <!--[if lt IE 9]>
+                <script src="lib/js/html5shiv.js"></script>
+                <![endif]-->
+        </head>
+
+        <body>
+
+                <div class="reveal">
+
+                        <!-- Any section element inside of this container is displayed as a slide -->
+                        <div class="slides">
+                                <section data-background="#ffffff">
+                                        <img width="559" height="322" data-src="spark-logo.png" style="background:none; border:none; box-shadow:none;">
+                                        <h3>Distributed Computing made easier</h3>
+                                        <p>
+                                                <small><a href="http://cs.mcgill.ca/~abeaul10">Alexandre Beaulne</a></small>
+                                        </p>
+					<aside class="notes">
+						<ul>
+							<li>easy vs easier</li>
+							<li>ambitious</li>
+							<li>moving target</li>
+							<li>define success of talk</li>
+						</ul>
+					</aside>
+                                </section>
+
+				<section data-background="#ffffff">
+                                        <img width="600" height="400" data-src="eclipse.jpg" style="background:none; border:none; box-shadow:none;">
+                                        </br>
+                                        <img width="154" height="60" data-src="logo.png" style="background:none; border:none; box-shadow:none;">
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>Agenda</h2>
+                                        <ul>
+                                                <li>context</li>
+                                                <li>theory</li>
+						<li>libraries</li>
+						<li>demo</li>
+                                        </ul>
+                                </section>
+
+				<section data-background="#ffffff">
+					<h2>Context</h2>
+					<h4>explosion in amount of data produced</h4>
+					<blockquote cite="http://techcrunch.com/2010/08/04/schmidt-data/">
+						&ldquo;Every two days now we create as much information as we did from the dawn of civilization up until
+                                                2003&rdquo;
+					</blockquote>
+					<font size="5">-Eric Schmidt, Google's chairman, Techonomy conf, August 2010</font>
+				</section>
+
+				<section data-background="#ffffff">
+					<h2>Context</h2>
+					<h4>Moore's law in jeopardy</h4>
+                                        <img width="793" height="470" data-src="moores.png" style="background:none; border:none; box-shadow:none;">
+					<aside class="notes">
+						Gordon Moore in 1965 predicted that the number of transistors per square inch
+						would double every two years
+					</aside>
+				</section>
+
+                                <section data-background="#ffffff">
+                                        <h2>Two approaches:</h2>
+                                        <ul>
+                                                <li>scaling vertically</li>
+                                                <li>scaling horizontally</li>
+                                        </ul>
+                                </section>
+
+                                <section data-background="#ffffff">
+					<blockquote cite="http://techcrunch.com/2010/08/04/schmidt-data/">
+						&ldquo;Scaling up is trying to make a machine feel like 100,
+						scaling out is trying to make 100 machines feel like 1&rdquo;
+					</blockquote>
+                                </section>
+
+				<section data-background="#ffffff">
+					<h2>MapReduce: Simplified Data Processing on Large Clusters</h2>
+					<h4>Jeffrey Dean and Sanjay Ghemawat, 2008</h4>
+                                        <img width="540" height="234" data-src="mapreduce.png" style="background:none; border:none; box-shadow:none;">
+					<aside class="notes">
+						<ul>
+							<li>common pattern</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section data-background="#ffffff">
+					<h4>2006-2011: Apache Hadoop makes the mapreduce model available to the masses</h4>
+                                        <img width="515" height="392" data-src="hadoop.jpg" style="background:none; border:none; box-shadow:none;">
+					<aside class="notes">
+						<ul>
+							<li>the problem</li>
+						</ul>
+					</aside>
+				</section>
+
+                                <section data-background="#ffffff">
+                                        <h2>Digression</h2>
+                                        <h4>Latency Comparison Numbers</h4>
+					<font size="4">
+					<table>
+						<thead>
+							<tr><th></th><th>ns</th><th>us</th><th>ms</th></tr>
+						</thead>
+						<tbody>
+ 							<tr><td>L1 cache reference</td><td>0.5</td><td></td><td></td><td></td></tr>
+ 							<tr><td>Branch mispredict</td><td>5</td><td></td><td></td><td></td></tr>
+ 							<tr><td>L2 cache reference</td><td>7</td><td></td><td></td><td></td></tr>
+ 							<tr><td>Mutex lock/unlock</td><td>25</td><td></td><td></td><td></td></tr>
+ 							<tr><td>Main memory reference</td><td>100</td><td></td><td></td><td></td></tr>
+ 							<tr><td>Compress 1K bytes with Zippy</td><td>3,000</td><td>3</td><td></td></tr>
+ 							<tr><td>Send 1K bytes over 1 Gbps network</td><td>10,000</td><td>10</td><td></td></tr>
+ 							<tr><td>Read 4K randomly from SSD*</td><td>150,000</td><td>150</td><td></td></tr>
+ 							<tr><td>Read 1 MB sequentially from memory</td><td>250,000</td><td>250</td><td></td></tr>
+ 							<tr><td>Round trip within same datacenter</td><td>500,000</td><td>500</td><td></td></tr>
+ 							<tr><td>Read 1 MB sequentially from SSD*</td><td>1,000,000</td><td>1,000</td><td>1</td></tr>
+ 							<tr><td>Disk seek</td><td>10,000,000</td><td>10,000</td><td>10</td></tr>
+ 							<tr><td>Read 1 MB sequentially from disk</td><td>20,000,000</td><td>20,000</td><td>20</td></tr>
+ 							<tr><td>Send packet CA->Netherlands->CA</td><td>150,000,000</td><td>150,000</td><td>150</td></tr>
+						</tbody>
+					</table>
+					Src: Software engineering advice from building large-scale distributed center, Jeffrey Dean
+					</font>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>Digression</h2>
+                                        <h4>If L1 access is a second, then:</h4>
+					<font size="4">
+					<table>
+						<tbody>
+ 							<tr><td>L1 cache reference</td><td>0:00:01</td></tr>
+ 							<tr><td>Branch mispredict</td><td>0:00:10</td></tr>
+ 							<tr><td>L2 cache reference</td><td>0:00:14</td></tr>
+ 							<tr><td>Mutex lock/unlock</td><td>0:00:50</td></tr>
+ 							<tr><td>Main memory reference</td><td>0:03:20</td></tr>
+ 							<tr><td>Compress 1K bytes with Zippy</td><td>1:40:00</td></tr>
+ 							<tr><td>Send 1K bytes over 1 Gbps network</td><td>5:33:20</td></tr>
+ 							<tr><td>Read 4K randomly from SSD</td><td>3 days, 11:20:00</td></tr>
+ 							<tr><td>Read 1 MB sequentially from memory</td><td>5 days, 18:53:20</td></tr>
+ 							<tr><td>Round trip within same datacenter</td><td>11 days, 13:46:40</td></tr>
+ 							<tr><td>Read 1 MB sequentially from SSD</td><td>23 days, 3:33:20</td></tr>
+ 							<tr><td>Disk seek</td><td>231 days, 11:33:20</td></tr>
+ 							<tr><td>Read 1 MB sequentially from disk</td><td>462 days, 23:06:40</td></tr>
+ 							<tr><td>Send packet CA->Netherlands->CA</td><td>3472 days, 5:20:00</td></tr>
+						</tbody>
+					</table>
+					Src: Software engineering advice from building large-scale distributed center, Jeffrey Dean
+					</font>
+                                </section>
+
+                                <section data-background="#ffffff">
+					<h4>2009-2014: Apache Spark released by Amplab at UC Berkeley</h4>
+                                        Objectives:
+                                        <ul>
+                                                <li>Avoid disk reads whenever possible</li>
+                                                <li>Support flexible workflows</li>
+                                                <li>Offers simple interfaces for a wide range of users</li>
+                                        </ul>
+					<aside class="notes">
+						<ul>
+							<li>Unless instructed to, will only spill to disk if run out of memory</li>
+							<li>Instead of map-reduce-map-reduce-map-reduce, have</li>
+							<li>map-filter-map-map-join-reduce-map-reduce</li>
+							<li>Written in Scala but multiple interfaces</li>
+							<li>Scala - Java - Python - R - SQL - REPL</li>
+						</ul>
+					</aside>
+                                </section>
+
+                                <section data-background="#ffffff">
+					<h2>RDD</h2>
+                                        <ul>
+                                                <li><u>R</u>esilient <u>D</u>istributed <u>D</u>ataset</li>
+						<li class="fragment">RDDs are logical collections of data partitioned across machines</li>
+						<li class="fragment">RDDs are the essence of Spark</li>
+						<li class="fragment">RDDs are the interface to your data</li>
+						<li class="fragment">RDDs are immutable</li>
+						<li class="fragment">RDDs are lazily evaluated</li>
+                                        </ul>
+                                </section>
+
+				<section data-background="#ffffff">
+                                        <img width="650" height="450" data-src="workers.png" style="background:none; border:none; box-shadow:none;">
+				</section>
+
+                                <section data-background="#ffffff">
+					<h4>Input/Output</h4>
+                                        <ul>
+                                                <li>Txt, CSV, JSON</li>
+                                                <li>HDFS</li>
+                                                <li>JDBC, HBase, Cassandra</li>
+                                                <li>many more!</li>
+                                        </ul>
+                                </section>
+
+                                <section data-background="#ffffff">
+					<h2>RDD</h2>
+                                        <ul>
+                                                <li class="fragment">Two types of operations on RDDs:</li>
+	                                        <ul>
+							<li class="fragment">Transformations</li>
+							<li class="fragment">Actions</li>
+						</ul>
+                                        </ul>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <table>
+                                                <thead>
+                                                        <tr>
+                                                                <td>Transformations</td>
+                                                                <td></td>
+                                                                <td>Actions</td>
+                                                        </tr>
+                                                </thead>
+                                                <tbody>
+                                                        <tr>
+                                                                <td>
+									<ul>
+										<li>map()</li>
+										<li>filter()</li>
+										<li>flatMap()</li>
+										<li>sample()</li>
+										<li>distinct()</li>
+										<li>sortByKey()</li>
+										<li>union()</li>
+										<li>intersection()</li>
+										<li>substract()</li>
+										<li>join()</li>
+										<li>cartesian()</li>
+									</ul>
+								</td>
+                                                                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                                <td>
+									<ul>
+										<li>collect()</li>
+										<li>count()</li>
+										<li>countByValue()</li>
+										<li>take()</li>
+										<li>reduce()</li>
+										<li>saveAsTextFile()</li>
+									</ul>
+								</td>
+                                                        </tr>
+                                               </tbody>
+                                        </table>
+                                </section>
+
+				<section data-background="#ffffff">
+					<h4>Lineage</h4>
+                                        <img width="638" height="479" data-src="lineage.jpg" style="background:none; border:none; box-shadow:none;">
+				</section>
+
+                                <section data-background="#ffffff">
+                                        <h4>Quick Example</h4>
+                                        <pre width="400"><code class="hljs" contenteditable>
+$ head nasa.log
+in24.inetnebr.com - - [01/Aug/2015:00:00:01 -0400] "GET /shuttle/missions/sts-68/news/sts-68-mcc-05.txt HTTP/1.0" 200 1839
+uplherc.upl.com - - [01/Aug/2015:00:00:07 -0400] "GET / HTTP/1.0" 304 0
+uplherc.upl.com - - [01/Aug/2015:00:00:08 -0400] "GET /images/ksclogo-medium.gif HTTP/1.0" 304 0
+uplherc.upl.com - - [01/Aug/2015:00:00:08 -0400] "GET /images/MOSAIC-logosmall.gif HTTP/1.0" 304 0
+uplherc.upl.com - - [01/Aug/2015:00:00:08 -0400] "GET /images/USA-logosmall.gif HTTP/1.0" 304 0
+ix-esc-ca2-07.ix.netcom.com - - [01/Aug/2015:00:00:09 -0400] "GET /images/launch-logo.gif HTTP/1.0" 200 1713
+uplherc.upl.com - - [01/Aug/2015:00:00:10 -0400] "GET /images/WORLD-logosmall.gif HTTP/1.0" 304 0
+slppp6.intermind.net - - [01/Aug/2015:00:00:10 -0400] "GET /history/skylab/skylab.html HTTP/1.0" 200 1687
+piweba4y.prodigy.com - - [01/Aug/2015:00:00:10 -0400] "GET /images/launchmedium.gif HTTP/1.0" 200 11853
+slppp6.intermind.net - - [01/Aug/2015:00:00:11 -0400] "GET /history/skylab/skylab-small.gif HTTP/1.0" 200 9202
+                                        </code></pre>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h4>Quick Example</h4>
+                                        <pre>
+$ pyspark
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /__ / .__/\_,_/_/ /_/\_\   version 1.6.0
+      /_/
+
+>>>                                        </pre>
+					<aside class="notes">
+                                            using pyspark here, but everything I do would be possible in Scala/R
+					</aside>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h4>Quick Example</h4>
+                                        <pre><code class="hljs" contenteditable>
+>>> log_rdd = sc.textFile('nasa.log')
+>>> tokens_rdd = log_rdd.map(lambda line: line.split(' '))
+>>> hours_rdd = tokens_rdd.map(lambda tokens: datetime.strptime(tokens[3], '[%d/%b/%Y:%H:%M:%S').hour)
+>>> hours_rdd.countByValue()
+{0: 47862, 1: 38531, 2: 32508, 3: 29995, 4: 26756, 5: 27587, 6: 31287, 7: 47386, 8: 65443, 9: 78695, 10: 88309, 11: 95344, 12: 105143, 13: 104536, 14: 101394, 15: 109465, 16: 99527, 17: 80834, 18: 66809, 19: 59315, 20: 59944, 21: 57985, 22: 60673, 23: 54570}
+                                        </code></pre>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>Persistence</h2>
+                                        <ul>
+                                                <li>By default, complete RDD lineage are recomputed when an action is called on them</li>
+                                                <li>persist() action comes in handy when we know work will be done repeatedly on an RDD</li>
+                                                <li>RDD can be persisted either in-memory or on disk</li>
+                                                <li>cache() is an alias for persisting in-memory</li>
+                                        </ul>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h4>Quick Example</h4>
+                                        <pre><code class="hljs" contenteditable>
+>>> log_rdd = sc.textFile('nasa.log')
+>>> tokens_rdd = log_rdd.map(lambda line: line.split(' '))
+>>> hours_rdd = tokens_rdd.map(lambda tokens: datetime.strptime(tokens[3], '[%d/%b/%Y:%H:%M:%S').hour)
+>>> hours_rdd.countByValue()
+{0: 47862, 1: 38531, 2: 32508, 3: 29995, 4: 26756, 5: 27587, 6: 31287, 7: 47386, 8: 65443, 9: 78695, 10: 88309, 11: 95344, 12: 105143, 13: 104536, 14: 101394, 15: 109465, 16: 99527, 17: 80834, 18: 66809, 19: 59315, 20: 59944, 21: 57985, 22: 60673, 23: 54570}
+>>> hours_rdd.distinct().collect()
+[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23]
+                                        </code></pre>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h4>Quick Example</h4>
+                                        <pre><code class="hljs" contenteditable>
+>>> log_rdd = sc.textFile('nasa.log')
+>>> tokens_rdd = log_rdd.map(lambda line: line.split(' '))
+>>> hours_rdd = tokens_rdd.map(lambda tokens: datetime.strptime(tokens[3], '[%d/%b/%Y:%H:%M:%S').hour)
+>>> hours_rdd.cache()
+>>> hours_rdd.countByValue()
+{0: 47862, 1: 38531, 2: 32508, 3: 29995, 4: 26756, 5: 27587, 6: 31287, 7: 47386, 8: 65443, 9: 78695, 10: 88309, 11: 95344, 12: 105143, 13: 104536, 14: 101394, 15: 109465, 16: 99527, 17: 80834, 18: 66809, 19: 59315, 20: 59944, 21: 57985, 22: 60673, 23: 54570}
+>>> hours_rdd.distinct().collect()
+[0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23]
+                                        </code></pre>
+                                </section>
+
+				<section data-background="#ffffff">
+                                        <img width="633" height="298" data-src="spark_old.png" style="background:none; border:none; box-shadow:none;">
+				</section>
+
+				<section data-background="#ffffff">
+                                        <img width="1039" height="437" data-src="spark_latest.png" style="background:none; border:none; box-shadow:none;">
+				</section>
+
+                                <section data-background="#ffffff">
+                                        <h2>Spark SQL and Dataframes</h2>
+                                        <ul>
+                                            <li>Introduced in February 2015</li>
+                                            <li>Distributed equivalent of R and Pandas' dataframes*</li>
+                                            <li>Offer a more powerful and expressive interface</li>
+                                        </ul>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>people.json</h2>
+                                        <pre><code class="hljs" contenteditable>
+{“name”:”Zhang”, “age”: 23, “address”:{“city”:”Columbus”,”state”:”Ohio”}}
+{“name”:”Michael”, “age”: 34, “address”:{“city”:null, “state”:”California”}}
+                                        </code></pre>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h4>Dataframe API:</h4>
+                                        <pre><code class="hljs" contenteditable>
+sqlContext = SQLContext(sc)
+people_df = sqlContext.jsonFile("people.json")
+print(people_df.select('age').avg().collect())
+                                        </code></pre>
+
+                                        <h4>SQL API:</h4>
+                                        <pre><code class="hljs" contenteditable>
+sqlContext = SQLContext(sc)
+people_df = sqlContext.jsonFile("people.json")
+people_df.registerTempTable("people")
+upper_first_letter = lambda string: string[0].upper() + string[1:]
+sqlContext.registerFunction('upper_first_letter', upper_first_letter)
+nameAndAddress = sqlContext.sql("""
+    SELECT upper_first_letter(name), address.city, address.state FROM people
+    """)
+for name, address, state in nameAndAddress.collect():
+    print('{} - {} - {}'.format(name, address, state))
+                                        </code></pre>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <img width="1024" height="457" data-src="df_perf.png" style="background:none; border:none; box-shadow:none;">
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>MLlib</h2>
+					Built-in library for Machine Learning. Supports:
+					<font size="5">
+                                        <ul>
+						<li>logistic regression and linear support vector machine (SVM)</li>
+						<li>classification and regression tree</li>
+						<li>random forest and gradient-boosted trees</li>
+						<li>clustering via k-means, bisecting k-means, Gaussian mixtures (GMM)</li>
+						<li>singular value decomposition (SVD) and QR decomposition</li>
+						<li>principal component analysis (PCA)</li>
+						<li>summary statistics and hypothesis testing</li>
+						<li>feature transformations</li>
+						<li>model evaluation and hyper-parameter tuning</li>
+						<li>and many more</li>
+                                        </ul>
+                                        </font>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>Spark Streaming</h2>
+                                        <ul>
+                                            <li>Process large streams of data in near real-time</li>
+                                            <li>Chop up the live stream into batches of X seconds (as low as 0.5 s)</li>
+                                            <li>Treat each micro-batch as an RDD and process them using RDD operations</li>
+                                        </ul>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>Spark Streaming</h2>
+                                        <img width="600" height="437" data-src="streaming.png" style="background:none; border:none; box-shadow:none;">
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>HKID check digit</h2>
+                                        <h3>A182361(5)</h3>
+                                        <h3>CA182361(1)</h3>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>HKID check digit algorithm</h2>
+                                        <ul>
+                                            <li>if HKID is eigth characters long: $$checksum = \sum_{i=0}^{7}{(9-i) \times CHAR2INT[HKID[i]]}$$</li>
+                                            <li>if HKID is seven character long: $$checksum = 9 \times 36 + \sum_{i=0}^{6}{(8-i) \times CHAR2INT[HKID[i]]}$$</li>
+                                            <li>check digit is given by: $$checkdigit = INT2CHAR[11 - checksum \ \% \ 11]$$</li>
+                                        </ul>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h4>Where</h4>
+					<font size="6">
+                                        <table>
+                                            <thead>
+                                                    <tr>
+                                                            <td>CHAR2INT</td>
+                                                            <td>INT2CHAR</td>
+                                                    </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                    <table>
+                                                            <thead>
+                                                                    <tr>
+                                                                            <td>Char</td>
+                                                                            <td>Int</td>
+                                                                    </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                    <tr>
+                                                                            <td>'0'</td>
+                                                                            <td>0</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                            <td>'1'</td>
+                                                                            <td>1</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                            <td>'2'</td>
+                                                                            <td>2</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                            <td>...</td>
+                                                                            <td>...</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                            <td>'9'</td>
+                                                                            <td>9</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                            <td>'A'</td>
+                                                                            <td>10</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                            <td>'B'</td>
+                                                                            <td>11</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                            <td>...</td>
+                                                                            <td>...</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                            <td>'Z'</td>
+                                                                            <td>35</td>
+                                                                    </tr>
+                                                           </tbody>
+                                                    </table>
+                                                    </td>
+                                                    <td>
+                                                        <table>
+                                                                <thead>
+                                                                        <tr>
+                                                                                <td>Int</td>
+                                                                                <td>Char</td>
+                                                                        </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                        <tr>
+                                                                                <td>1</td>
+                                                                                <td>'1'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>2</td>
+                                                                                <td>'2'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>3</td>
+                                                                                <td>'3'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>4</td>
+                                                                                <td>'4'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>5</td>
+                                                                                <td>'5'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>6</td>
+                                                                                <td>'6'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>7</td>
+                                                                                <td>'7'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>8</td>
+                                                                                <td>'8'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>9</td>
+                                                                                <td>'9'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>10</td>
+                                                                                <td>'A'</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                                <td>11</td>
+                                                                                <td>'0'</td>
+                                                                        </tr>
+                                                               </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </font>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>in Python</h2>
+                                        <pre><code class="hljs" contenteditable>
+from random import randint, random, choice
+
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+CHARS = '0123456789' + LETTERS
+CHAR2INT = {k:v for k, v in zip(CHARS, range(36))}
+INT2CHAR = {k:v for k, v in zip(range(1, 12), '123456789A0')}
+
+def checkdigit(hkid):
+    checksum = CHAR2INT[hkid[0]] * 9 if len(hkid) == 8 else 324
+    checksum += sum([(8 - i) * CHAR2INT[x] for i, x in enumerate(hkid[-7:])])
+    return INT2CHAR[11 - checksum % 11]
+
+def gen_hkid():
+    head = choice(LETTERS) if random() < 0.5 else ''
+    neck = choice(LETTERS)
+    tail = randint(0, 999999)
+    id = '{}{}{:06d}'.format(head, neck, tail)
+    checksum = checkdigit(id)
+    return '{}({})'.format(id, checksum)
+                                        </code></pre>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <h2>in plain Python</h2>
+                                        <pre><code class="hljs" contenteditable>
+if __name__ == '__main__':
+
+    indices = xrange(int(sys.argv[1]))
+    hkids = (gen_hkid() for i in indices)
+    for hkid in hkids:
+        print(hkid)
+                                        </code></pre>
+
+                                        <h2>with Spark RDD</h2>
+                                        <pre><code class="hljs" contenteditable>
+if __name__ == '__main__':
+
+    sc = SparkContext(master='spark://ec2-54-229-175-30.eu-west-1.compute.amazonaws.com:7077', appName='snk')
+
+    indices_rdd = sc.range(0, int(sys.argv[1]), 20)
+    hkids_rdd = indices_rdd.map(lambda _index: gen_hkid())
+    for hkid in hkids_rdd.collect():
+        print(hkid)
+                                        </code></pre>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        <table>
+                                                <thead>
+                                                        <tr>
+                                                                <td>Sample size</td>
+                                                                <td>Plain Python</td>
+                                                                <td>Spark RDD*</td>
+                                                        </tr>
+                                                </thead>
+                                                <tbody>
+                                                        <tr>
+                                                                <td>7 264 100
+								</td>
+                                                                <td>~120 s</td>
+                                                                <td>~120 s
+								</td>
+                                                        </tr>
+                                                        <tr>
+                                                                <td>1 375 000 000
+								</td>
+                                                                <td>~6 h</td>
+                                                                <td>~ 18 mins
+								</td>
+                                                        </tr>
+                                               </tbody>
+                                        </table>
+					<font size="4">
+                                        * Spark cluster on AWS EC2 with 10 M1-large instances, 2 cores per instances
+					</font>
+                                </section>
+
+                                <section data-background="#ffffff">
+					<h2>Deploying</h2>
+                                        <ul>
+                                                <li>Databricks' Spark-as-a-Service</li>
+                                                <li>Spark Amazon AWS EC2 deploy scripts</li>
+                                                <li>Spark local-cluster deploy scripts</li>
+                                                <li>Spark Flintrock scripts</li>
+                                        </ul>
+                                </section>
+
+                                <section data-background="#ffffff">
+                                        The biggest Spark clusters in production are in China
+                                        <ul>
+                                                <li>Baidu with > 1000 nodes</li>
+                                                <li>Tencent (Wechat/Weixin) with 8000 nodes</li>
+                                                <li>Alibaba was an early adopter at v0.6</li>
+                                        </ul>
+                                        </br>
+					<font size="4">
+                                        Source: Reynold Xin, Cofounder Databricks, SparkConf Singapore 2015
+					</font>
+                                </section>
+
+                                <section data-background="#ffffff">
+					<h2>Learn more</h2>
+                                        <ul>
+                                            <li>Upcoming <a href="https://www.edx.org/xseries/data-science-engineering-spark">EdX Spark XSeries</a></li>
+                                            <li><a href="http://www.oreilly.com/data/sparkcert.html">OReilly Spark Certification</a></li>
+                                        </ul>
+					<aside class="notes">
+						<ul>
+							<li>Akmal</li>
+						</ul>
+					</aside>
+                                </section>
+
+                        </div>
+
+                </div>
+
+                <script src="js/reveal.js/lib/js/head.min.js"></script>
+                <script src="js/reveal.js/js/reveal.js"></script>
+
+                <script>
+
+                        // Full list of configuration options available at:
+                        // https://github.com/hakimel/reveal.js#configuration
+                        Reveal.initialize({
+                                controls: true,
+                                progress: true,
+                                history: true,
+                                center: true,
+
+                                transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+                                math: {
+                                    mathjax: 'js/MathJax.js',
+                                    config: 'TeX-AMS_HTML-full'  // See http://docs.mathjax.org/en/latest/config-files.html
+                                },
+
+                                // Optional reveal.js plugins
+                                dependencies: [
+                                        { src: 'js/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                                        { src: 'js/reveal.js/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                                        { src: 'js/reveal.js/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+                                        { src: 'js/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                                        { src: 'js/reveal.js/plugin/zoom-js/zoom.js', async: true },
+                                        { src: 'js/reveal.js/plugin/notes/notes.js', async: true },
+                                        { src: 'js/reveal.js/plugin/math/math.js', async: true }
+                                ]
+                        });
+
+                </script>
+
+        </body>
+</html>
